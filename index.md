@@ -5,21 +5,21 @@ layout: post
 ## 文档目录
 ----
 
-- [第1章 安装 ](/zh/00-install.html)
-- [第2章 文档类型](/zh/01-documents.html)
-- [第3章 持久化](/zh/02-persistence.html)
-- [第4章 查询](/zh/03-querying.html)
-- [第5章 关系](/zh/04-relations.html)
-- [第6章 嵌套属性](/zh/05-nested_attributes.html)
-- [第7章 回调](/zh/06-callbacks.html)
-- [第8章 验证](/zh/07-validation.html)
-- [第9章 索引](/zh/08-indexing.html)
-- [第10章 rails](/zh/09-rails.html)
-- [第11章 extras](/zh/10-extras.html)
-- [第12章 升级](/zh/11-upgrading.html)
-- [第13章 贡献](/zh/12-contributing.html)
-- [第14章 性能](/zh/13-performance.html)
-- [第15章 技巧&FAQ](/zh/14-tips.html)
+- [第1章 安装 ](/mongoid-zh/zh/00-install.html)
+- [第2章 文档类型](/mongoid-zh/zh/01-documents.html)
+- [第3章 持久化](/mongoid-zh/zh/02-persistence.html)
+- [第4章 查询](/mongoid-zh/zh/03-querying.html)
+- [第5章 关系](/mongoid-zh/zh/04-relations.html)
+- [第6章 嵌套属性](/mongoid-zh/zh/05-nested_attributes.html)
+- [第7章 回调](/mongoid-zh/zh/06-callbacks.html)
+- [第8章 验证](/mongoid-zh/zh/07-validation.html)
+- [第9章 索引](/mongoid-zh/zh/08-indexing.html)
+- [第10章 rails](/mongoid-zh/zh/09-rails.html)
+- [第11章 extras](/mongoid-zh/zh/10-extras.html)
+- [第12章 升级](/mongoid-zh/zh/11-upgrading.html)
+- [第13章 贡献](/mongoid-zh/zh/12-contributing.html)
+- [第14章 性能](/mongoid-zh/zh/13-performance.html)
+- [第15章 技巧&FAQ](/mongoid-zh/zh/14-tips.html)
 
 > 备注: 开发中使用的3.1.3的Mongoid的gem包，所以，翻译打算以3.X为准。
 

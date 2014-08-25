@@ -4,9 +4,9 @@ email: jhqy2011@gmail.com
 description: > # this means to ignore newlines until "baseurl:"
   本文档翻译自[Mongoid](http://mongoid.org/en/mongoid/),没有得到授权,也没有联系原有的作者。翻译的原因是刚好自己要学习和使用。
 
-baseurl:  
+baseurl: /mongoid-zh 
 # the subpath of your site, e.g. /blog/
-url:  
+url:  http://xiajian.github.io/mongoid-zh
 # the base hostname & protocol for your site
 twitter_username: 
 github_username:  xiajian

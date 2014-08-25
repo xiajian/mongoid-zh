@@ -1,0 +1,158 @@
+---
+layout: post
+title: 贡献
+---
+
+
+Contributing
+
+Mongoid is open source and embraces the social coding aspect of github. Here are some guidelines on contributing to the project and ensuring fast acceptance of your contributions.
+
+    Issues
+    Core
+    Docs
+
+Issues
+
+As developers, we hate getting issue reports from users that we cannot replicate don't we? The same applies when submitting issues as well. Here are some guidelines on what to provide in a Github issue in order for us to expedite resolving the problem.
+
+    The version of Mongoid (and if applicable Moped and Origin) that you are using. We cannot assume a particular version since we actively support and maintain 10-20 patch releases and 2 major releases at the same time.
+    Your operating system and version. Yes, this is important, especially from a database driver perspective.
+    Your Ruby version, with exact patch level. This is also very important for the same reasons as above.
+    If you are getting a stack trace, please provide the entire thing, not just the message or the last line in it. Stack traces provide context and omitting them for the sake of brevity is not helpful.
+    The exact steps in your application to reproduce the error, or some code that will reproduce the issue without need for interperetation from our side. This is very important as we are not mind readers and cannot make any assumptions about how the issue arose. The more information you provide, the faster we can address it.
+
+Core Contributions
+
+Fork the repo on github and issue a pull request with your changes. No other means of supplying code to the team will be accepted.
+	Provide specs with your pull request if the existing specs do not cover the change. Pull requests that provide new functionality without specs will not be pulled in under any circumstance. Also make sure to rebase -i your pull requests into a single commit.
+Running the Specs
+
+Getting set up should require minimal effort:
+
+    Install MongoDB.
+    Fork and clone the repository.
+    Run gem install bundler to get the latest for the gemset.
+    Run bundle install for dependencies.
+    Run rake to execute all specs.
+
+Mongoid uses Guard for automated testing. To run it from the project root:
+
+$ bundle exec guard
+
+Spec Guidelines
+
+The following code demostrates the desired way to write a spec in Mongoid.
+
+    Use describe blocks for method names.
+    Use context blocks for conditions.
+    Prefer let over the use of instance variables.
+    1 assertion per example block.
+    When describing methods, prefix with # for instance methods, . for class methods.
+    Avoid generating Ruby warnings by not using should == but rather should eq.
+
+require "spec_helper"
+
+describe Mongoid::Relations::Embedded::Many do
+
+  describe "#=" do
+
+    context "when the parent is a new record" do
+
+      let(:person) do
+        Person.new
+      end
+
+      let(:address) do
+        Address.new
+      end
+
+      before do
+        person.addresses = [ address ]
+      end
+
+      it "sets the target of the relation" do
+        person.addresses.should eq([ address ])
+      end
+    end
+  end
+
+  describe ".macro" do
+
+    it "returns :embeds_many" do
+      described_class.macro.should eq(:embeds_many)
+    end
+  end
+end
+
+Coding Guidelines
+
+Mongoid has the design philosophy of having many fine grained, single purpose objects in its domain. It makes the design more flexible and much easier to test. If you find yourself refactoring at all, extract class is always a good refactoring technique to have in mind.
+
+Here are some other simple rules that will help expidite your patch acceptance.
+
+    Keep method line counts small and easy to read.
+    Copy and pasted code from another library will never be accepted.
+    Provide API documentation in the form of YARD.
+
+# encoding: utf-8
+module Mongoid # :nodoc:
+  module Relations #:nodoc:
+
+    # This module contains the core macros for defining relations between
+    # documents. They can be either embedded or referenced (relational).
+    module Macros
+      extend ActiveSupport::Concern
+
+      module ClassMethods #:nodoc:
+
+      # Adds the relation back to the parent document. This macro is
+      # necessary to set the references from the child back to the parent
+      # document. If a child does not define this relation calling
+      # persistence methods on the child object will cause a save to fail.
+      #
+      # @example Define the relation.
+      #
+      #   class Person
+      #     include Mongoid::Document
+      #     embeds_many :addresses
+      #   end
+      #
+      #   class Address
+      #     include Mongoid::Document
+      #     embedded_in :person
+      #   end
+      #
+      # @param [ Symbol ] name The name of the relation.
+      # @param [ Hash ] options The relation options.
+      # @param [ Proc ] block Optional block for defining extensions.
+      #
+      # @since 2.0.0
+      def embedded_in(name, options = {}, &block)
+        characterize(name, Embedded::In, options, &block).tap do |meta|
+          self.embedded = true
+          relate(name, meta)
+        end
+      end
+    end
+  end
+end
+
+Commit Guidelines
+
+Ensure to write good descriptive commit messages, and follow the parameters set forth here by Tim Pope using which are the same standards as the linux kernel.
+Documentation Contributions
+
+The Mongoid website is open source as well, and hosted on github. It uses middleman as a static content generator, and additions to the documentation are always welcome. The same rules apply here:
+
+Fork the repo on github and issue a pull request with your changes. No other means of supplying code to the team will be accepted.
+
+Getting set up here is easy as well:
+
+    Fork and clone the repository.
+    Run gem install bundler to get the latest for the gemset.
+    Run bundle install for dependencies.
+    Run bundle exec middleman to run the site with sinatra.
+
+Pull requests will be merged in and regenerated to the mongoid.github.com repo where you're contributions can be seen in all their glory.
+

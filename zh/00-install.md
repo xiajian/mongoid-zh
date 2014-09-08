@@ -32,7 +32,7 @@ Mongoid leverages many aspects of the Ruby programming language that are not for
 Mongoid利用了Ruby中很多不为认知的方面，所以不要因为一些Ruby语法错误就将其当作bug发送给核心开发团队，这非常的浪费时间。
 	
 
-> ![](/images/achtung.png)  THE DATABASE IS NOT A BLACK BOX.数据库不是黑盒  
+> ![](/mongoid-zh/images/achtung.png)  THE DATABASE IS NOT A BLACK BOX.数据库不是黑盒  
 > Mongoid is an abstraction to make application developers' lives easier, however the internals leverage the power of MongoDB and it is truly important to know what is going on under the covers. This is why the documentation provides the exact queries that Mongoid is executing against the database when you call a persistence operation. If we took the time to tell you, you should listen. :)  
 > Mongoid是让开发者更加轻松的数据库抽象，了解黑盒之下的东西，并利用内部杠杆启动MongoDB的能力不可或缺，这也是为什么文档提供了Mongoid可以对在数据库上执行精确的查询。
 

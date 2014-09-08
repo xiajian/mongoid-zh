@@ -1,9 +1,7 @@
 ---
 layout: post
-title:  持久化
+title:  持久化(Persistence)
 ---
-
-Persistence
 
 Mongoid supports all expected CRUD operations for those familiar with other Ruby mappers like Active Record or Data Mapper. What distinguishes Mongoid from other mappers for MongoDB is that the general persistence operations perform atomic updates on only the fields that have changed instead of writing the entire document to the database each time.
 
@@ -13,526 +11,70 @@ The persistence sections will provide examples on what database operation is per
     Atomic
     Custom 
 
-Standard
+## Standard
+----
 
 Mongoid's standard persistence methods come in the form of common methods you would find in other mapping frameworks. The following table is a cheat sheet with the method in Mongoid on the left, and the Moped driver operation on the right.
-	Mongoid never persists the entire document at once unless it is new. It figures out what has changed, and only ever updates the changed items atomically.
 
-Operation
-	
+------------------------------------- | ------------------------------------------------------------------------------- 
+![](/mongoid-zh/images/achtung.png)   |	Mongoid never persists the entire document at once unless it is new. It figures out what has changed, and only ever updates the changed items atomically.
 
-Mongoid
-	
 
-Moped
+# 关于如何使用复杂的表格，即表格中插代码的方式，并没有找到合适的方式，还是原先提供的文档的格式比较好。
 
-Model.create
-
-Insert a document or multiple documents into the database
-	
-
+ Operation            |          Mongoid                    |                         Moped
+--------------------- | ----------------------------------- | --------------------------------------------
+`Model.create`<br/>Insert a document or multiple documents into the database	 |{% highlight ruby %}
 Person.create(
-
   first_name: "Heinrich",
-
   last_name: "Heine"
-
 )
-
- 
 
 Person.create([
-
   { first_name: "Heinrich", last_name: "Heine" },
-
   { first_name: "Willy", last_name: "Brandt" }
-
 ])
-
- 
 
 Person.create(first_name: "Heinrich") do |doc|
-
   doc.last_name = "Heine"
-
-end
-
- 
-	
-
+end {% endhighlight %} |{% highlight ruby %} 
 collections[:people].insert({
-
   first_name: "Heinrich",
-
   last_name: "Heine"
-
 })
-
 collections[:people].insert([
-
   { first_name: "Heinrich", last_name: "Heine" },
-
   { first_name: "Willy", last_name: "Brandt" }
-
-])
-
+]){% endhighlight %}
  
 
-Model.create!
-
-Insert a document or multiple documents into the database, raising an error if a validation error occurs.
-	
-
-Person.create!(
-
-  first_name: "Heinrich",
-
-  last_name: "Heine"
-
-)
-
- 
-
-Person.create!(first_name: "Heinrich") do |doc|
-
-  doc.last_name = "Heine"
-
-end
-
- 
-	
-
-collections[:people].insert({
-
-  first_name: "Heinrich",
-
-  last_name: "Heine"
-
-})
-
- 
-
-Model#save
-
-Saves the changed attributes to the database atomically, or insert the document if flagged as a new_record via Model#new_record?. Can bypass validations if wanted.
-	
-
-person = Person.new(
-
-  first_name: "Heinrich",
-
-  last_name: "Heine"
-
-)
-
-person.save
-
-person.save(validate: false)
-
- 
-
-person.first_name = "Christian Johan"
-
-person.save
-
- 
-	
-
-collections[:people].insert({
-
-  first_name: "Heinrich",
-
-  last_name: "Heine"
-
-})
-
- 
-
-collections[:people].find(...).
-
-  update("$set" => { first_name: "Christian Johan" })
-
- 
-
-Model#save!
-
-Saves the changed attributes to the database atomically, or insert the document if new. Will raise an error of validations fail.
-	
-
-person = Person.new(
-
-  first_name: "Heinrich",
-
-  last_name: "Heine"
-
-)
-
-person.save!
-
- 
-
-person.first_name = "Christian Johan"
-
-person.save!
-
- 
-	
-
-collections[:people].insert({
-
-  first_name: "Heinrich",
-
-  last_name: "Heine"
-
-})
-
- 
-
-collections[:people].find(...).
-
-  update("$set" => { first_name: "Christian Johan" })
-
- 
-
-Model#update_attributes
-
-Update the provided attributes atomically.
-	
-
-person.update_attributes(
-
-  first_name: "Jean",
-
-  last_name: "Zorg"
-
-)
-
- 
-	
-
-collections[:people].find(...).
-
-  update("$set" => {
-
-    first_name: "Jean",
-
-    last_name: "Zorg"
-
-  })
-
- 
-
-Model#update_attributes!
-
-Update the attributes and raise an error if validation fails.
-	
-
-person.update_attributes!(
-
-  first_name: "Jean",
-
-  last_name: "Zorg"
-
-)
-
- 
-	
-
-collections[:people].find(...).
-
-  update("$set" => {
-
-    first_name: "Jean",
-
-    last_name: "Zorg"
-
-  })
-
- 
-
-Model#update_attribute
-
-Update a single attribute, bypassing validations.
-	
-
-person.update_attribute(:first_name, "Jean")
-
- 
-	
-
-collections[:people].find(...).
-
-  update("$set" => { first_name: "Jean" })
-
- 
-
-Model#upsert
-
-Performs a MongoDB upsert on the document. If the document exists in the database, it will get overwritten with the current attributes of the document in memory. If the document does not exist in the database, it will be inserted. Note that this only runs the {before|after|around}_upsert callbacks.
-	
-
-person = Person.new(
-
-  first_name: "Heinrich",
-
-  last_name: "Heine"
-
-)
-
-person.upsert
-
- 
-	
-
-collections[:people].upsert({
-
-  first_name: "Heinrich",
-
-  last_name: "Heine"
-
-})
-
- 
-
-Model#touch
-
-Update the document's updated_at timestamp, optionally with one extra provided time field. This will cascade the touch to all belongs_to relations of the document with the option set. This operation skips validations and callbacks.
-	
-
-person.touch
-
-person.touch(:audited_at)
-
- 
-	
-
-collections[:people].find(...).
-
-  update("$set" => { updated_at: Time.now })
-
- 
-
-collections[:people].find(...).
-
-  update({
-
-    "$set" => {
-
-      updated_at: Time.now,
-
-      audited_at: Time.now
-
-    }
-
-  })
-
- 
-
-Model#delete
-
-Deletes the document from the database without running callbacks.
-	
-
-person.delete
-
- 
-	
-
-collections[:people].find(...).remove
-
- 
-
-Model#destroy
-
-Deletes the document from the database while running destroy callbacks.
-	
-
-person.destroy
-
- 
-	
-
-collections[:people].find(...).remove
-
- 
-
-Model.delete_all
-
-Deletes all documents from the database that match the provided attributes. Does not run any callbacks.
-	
-
-Person.delete_all
-
- 
-
-Person.delete_all(first_name: "Heinrich")
-
- 
-	
-
-collections[:people].find.remove_all
-
- 
-
-collections[:people].find(first_name: "Heinrich").
-
-  remove_all
-
- 
-
-Model.destroy_all
-
-Deletes all documents from the database that match the provided attributes. Runs each document's destroy callbacks
-	
-
-Person.destroy_all
-
- 
-
-Person.destroy_all(first_name: "Heinrich")
-
- 
-	
-
-collections[:people].find.remove_all
-
- 
-
-collections[:people].find(first_name: "Heinrich").
-
-  remove_all
-
- 
-
-Atomic Persistence
+## Atomic Persistence
+----
 
 Although Mongoid performs atomic operations under the covers by default, there may be cases where you want to do this explicitly without persisting other fields. Mongoid provides support for all of these operations as well.
-	When executing atomic operations via these methods, no callbacks will ever get run, nor will any validations.
-Operation	Mongoid	Moped
-Model#add_to_set
 
-Performs an atomic $addToSet on the field.
-	
+------------------------------------- | ------------------------------------------------------------------------------- 
+![](/mongoid-zh/images/achtung.png)   | When executing atomic operations via these methods, no callbacks will ever get run, nor will any validations.
 
-person.add_to_set(:aliases, "Bond")
 
-	
+   Operation                                                      | 	    Mongoid                        | 	Moped  
+----------------------------------------------------------------- | ------------------------------------ | ------------------------------------------
+`Model#add_to_set`<br/>Performs an atomic $addToSet on the field. | person.add_to_set(:aliases, "Bond")  | collections[:people].find(...).<br/> &nbsp;&nbsp;update("$addToSet" => { aliases: "Bond" })
+`Model#bit`<br/>Performs an atomic $bit on the field.             | person.bit(:age, { and: 10, or: 12 }) |  collections[:people].find(...).<br/> &nbsp;&nbsp;update("$bit" => { age: { and: 10, or: 12 }})
+`Model#inc`<br/>Performs an atomic $inc on the field.             | person.inc(age: 1)                   | collections[:people].find(...).<br/> &nbsp;&nbsp;update("$inc" => { age: 1 })
+`Model#pop`<br/>Performs an atomic $pop on the field.             | person.pop(aliases: 1)               | collections[:people].find(...).<br/> &nbsp;&nbsp;update("$pop" => { aliases: 1 })
+`Model#pull`<br/>Performs an atomic $pull on the field.           | person.pull(aliases: "Bond")         | collections[:people].find(...).<br/> &nbsp;&nbsp;update("$pull" => { aliases: "Bond" })
+`Model#pull_all`<br/>Performs an atomic $pullAll on the field.    | person.pull_all(:aliases, [ "Bond", "James" ]) | collections[:people].find(...).<br/> &nbsp;&nbsp;update("$pullAll" => { aliases: [ "Bond", "James" ]})
+`Model#push`<br/>Performs an atomic $push on the field.           | person.push(aliases: "007") | collections[:people].find(...).<br/> &nbsp;&nbsp;update("$push" => { aliases: "007" })
+`Model#push_all`<br/>Performs an atomic $pushAll on the field.    | person.push_all(:aliases, [ "007", "008" ]) | collections[:people].find(...).<br/> &nbsp;&nbsp;update("$pushAll" => { aliases: [ "007", "008" ]})
+`Model#rename`<br/>Performs an atomic $rename on the field.       | person.rename(bday: :dob) | collections[:people].find(...).<br/> &nbsp;&nbsp;update("$rename" => { "bday" => "dob" })
+`Model#set`<br/>Performs an atomic $set on the field.             | person.set(name: "Tyler Durden") | collections[:people].find(...).<br/> &nbsp;&nbsp;update("$set" => { name: "Tyler Durden" })
+`Model#unset`Performs an atomic $unset on the field.              | person.unset(:name) | collections[:people].find(...).<br/> &nbsp;&nbsp;update("$unset" => { name: 1 })
 
-collections[:people].find(...).  update("$addToSet" =< { aliases: "Bond" })
+## Custom
+----
 
-Model#bit
-
-Performs an atomic $bit on the field.
-	
-
-person.bit(:age, { and: 10, or: 12 })
-
-	
-
-collections[:people].find(...).  update("$bit" =< { age: { and: 10, or: 12 }})
-
-Model#inc
-
-Performs an atomic $inc on the field.
-	
-
-person.inc(:age, 1)
-
-	
-
-collections[:people].find(...).  update("$inc" =< { age: 1 })
-
-Model#pop
-
-Performs an atomic $pop on the field.
-	
-
-person.pop(:aliases, 1)
-
-	
-
-collections[:people].find(...).  update("$pop" =< { aliases: 1 })
-
-Model#pull
-
-Performs an atomic $pull on the field.
-	
-
-person.pull(:aliases, "Bond")
-
-	
-
-collections[:people].find(...).  update("$pull" =< { aliases: "Bond" })
-
-Model#pull_all
-
-Performs an atomic $pullAll on the field.
-	
-
-person.pull_all(:aliases, [ "Bond", "James" ])
-
-	
-
-collections[:people].find(...).  update("$pullAll" =< { aliases: [ "Bond", "James" ]})
-
-Model#push
-
-Performs an atomic $push on the field.
-	
-
-person.push(:aliases, "007")
-
-	
-
-collections[:people].find(...).  update("$push" =< { aliases: "007" })
-
-Model#push_all
-
-Performs an atomic $pushAll on the field.
-	
-
-person.push_all(:aliases, [ "007", "008" ])
-
-	
-
-collections[:people].find(...).  update("$pushAll" =< { aliases: [ "007", "008" ]})
-
-Model#rename
-
-Performs an atomic $rename on the field.
-	
-
-person.rename(:bday, :dob)
-
-	
-
-collections[:people].find(...).  update("$rename" =< { "bday" =< "dob" })
-
-Model#set
-
-Performs an atomic $set on the field.
-	
-
-person.set(:name, "Tyler Durden")
-
-	
-
-collections[:people].find(...).  update("$set" =< { name: "Tyler Durden" })
-
-Model#unset
-
-Performs an atomic $unset on the field.
-	
-
-person.unset(:name)
-
-	
-
-collections[:people].find(...).  update("$unset" =< { name: 1 })
-
-Custom
-
-There may be cases where you want to persist documents to different sources from their defaults, or with different options from the default. Mongoid provides run-time support for this as well as support on a per-model basis.
+There maybe cases where you want to persist documents to different sources from their defaults, or with different options from the default. Mongoid provides run-time support for this as well as support on a per-model basis.
 Model Level Persistence Options
 
 On a per-model basis, you can tell it to store in a custom collection name, a different database, or a different session. The following example would store the Band class by default into a collection named "artists" in the database named "music", with the session "secondary".

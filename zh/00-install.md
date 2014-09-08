@@ -105,8 +105,7 @@ production:
       # A session can have any number of hosts. Usually 1 for a single
       # server setup, and at least 3 for a replica set. Hosts must be
       # an array of host:port pairs. This session is single server.
-      #一个会话可以拥有多个主机。通常一个主机对应一个启动服务器，以及至少3个replica集合。主机必须是host:port数组队。如下是单个服务器会话。
-
+      #一个会话可以拥有多个主机。通常一个主机对应一个启动服务器，以及至少3个replica集合。主机必须是host:port数组对。如下是单个服务器会话。
       hosts:
         - flame.mongohq.com:27017
       # Define the default database name. 定义默认数据库的名字
@@ -162,49 +161,66 @@ production:
 
 Mongoid currently supports the following configuration options, either provided in the mongoid.yml or programatically (defaults in parenthesis).
 
-Mongoid当前支持如下的配置选项，可以通过mongoid.yml或者编程实现（）
+Mongoid当前支持如下的配置选项，可以通过mongoid.yml或者编程实现(括号中为默认参数)
 
 -  `allow_dynamic_fields`(true): When attributes are not defined as fields but added to an object, they will get fields added for them dynamically and will get persisted. If set to false an error will get raised when attempting to set a value that has no field defined.
+-  `allow_dynamic_fields`(true): 当属性没有定义为类的域但被添加到对象中时，mongoid江自动添加相应的域并将其持久化。如果该属性设置false时，则在尝试给未定义的属性设置值时，会引发异常。
 -  `identity_map_enabled`(false): When set to true Mongoid will store documents loaded from the database in the identity map by their ids, so subsequent database queries for the same document in the same unit of work do not hit the database. This is only for relation queries at the moment. See the identity map documentation for more info.
+-  `identity_map_enabled`(false): 该属性设置为true时，将从数据库中加载的文档，以其标记映射(identity map)的ids进行保存，所以后续在同一单元中，查询相同的文档不必访问数据库。这仅仅适用统一时刻的关系查询，更多信息参考映射文件。
 -  `include_root_in_json`(false): When set to true mongoid will include the name of the root document and the name of each association as the root element when calling #to_json on a model.
+-  `include_root_in_json`(false): 该属性设置为true时，mongoid将包含根文档的名字并将每个关联名作为根元素调用模型上的to_json方法。
 -  `include_type_for_serialization`(false): When set to true this will tell Mongoid to include the "_type" field when serializing to JSON and XML.
+-  `include_type_for_serialization`(false): 该属性设置为true时，将在序列化对象为JSON和XML时，加上_type属性域。
 -  `preload_models`(false): Tells Mongoid to preload application model classes on each request in environments where classes are not being cached. Specify an array of class names when enabling, only to the classes that use inheritance.
--  `protect_sensitive_fields`(true): Mongoid by default will auto protect '_id' and '_type' from mass assignment. Set this to false if you are daring with your application's security.
+-  `preload_models`(false): 设置Mongoid将会对环境中没有缓存的类，在每个请求上预渲染应用程序模型类。仅仅针对那些继承类。
+-  `protect_sensitive_fields`(true): Mongoid by default will auto protect `_id` and `_type` from mass assignment. Set this to false if you are daring with your application's security.
+-  `protect_sensitive_fields`(true): Mongoid默认自动保护`_id`和`_type`的错误赋值。如果对应用程序的安全性相当自信，可以设置为false。
 -  `raise_not_found_error`(true): Will raise a Mongoid::Errors::DocumentNotFound when attempting to find a document by an id that doesnt exist. When set to false will only return nil for the same query.
+-  `raise_not_found_error`(true): 该属性设置当尝试寻找id不存在的文档时，是否会抛出Mongoid::Errors::DocumentNotFound。设置为false时，则仅仅返回为nil。
 -  `skip_version_check`(false): If you are having issues authenticating against MongoHQ or MongoMachine because of access to the system collection being not allowed, set this to true.
+-  `skip_version_check`(false): 如果由于接入系统，而对MongoHQ和MongoMachine的权限认证抱有问题，可以将其设置为真。
 -  `scope_overwrite_exception`(false): This will instruct Mongoid to raise an error if you define a scope with the same name as an existing method.
--  `use_activesupport_time_zone`(true): When in a Rails app will tell Mongoid to convert all times in the application to the local defined time zone in Active Support.
+-  `scope_overwrite_exception`(false): 该属性设置为true时，当定义和已存在的方法同名的scope时，会抛出异常。
+-  `use_activesupport_time_zone`(true): When in a Rails app will tell Mongoid to convert all times in the application to the local defined time zone in Active Support. 设置时区转换。
 -  `use_utc`(false): Instructs Mongoid to convert all times to UTC times in all cases。指导Mongoid是否将所有时间转换为UTC时间。 
 
-If you would like to see samples, there is one in the Mongoid repository and one in the Echo sample application.
+If you would like to see samples, there is one in the [Mongoid repository](https://github.com/mongoid/mongoid/blob/master/spec/config/mongoid.yml) and one in the [Echo sample application](https://github.com/mongoid/echo/blob/master/config/mongoid.yml).
 
-如果想看配置文件的例子，可以参考在Mongoid的版本库或者 Echo sample application
+如果想看配置文件的例子，可以参考在[Mongoid的版本库](https://github.com/mongoid/mongoid/blob/master/spec/config/mongoid.yml)或者[Echo sample application](https://github.com/mongoid/echo/blob/master/config/mongoid.yml)。
 
 ### Getting Rid of Active Record（脱离Active Record）
 
-Now that you have a mongoid.yml you can't wait to delete that pesky database.yml, right? Do it and you'll start getting ActiveRecord errors all over the place. You don't need ActiveRecord unless you're trying to use Mongo in concert with a SQL database. Here's how you remove ActiveRecord from the most recent version of Rails 3... 如何从Rails 3中移除Active Record? 
+Now that you have a mongoid.yml you can't wait to delete that pesky database.yml, right? Do it and you'll start getting ActiveRecord errors all over the place. You don't need ActiveRecord unless you're trying to use Mongo in concert with a SQL database. Here's how you remove ActiveRecord from the most recent version of Rails 3... 
+
+现在，有了mongoid.yml，你迫不及待的删除那令人讨厌的database.yml，不是吗？ 如果你真这么做了，将会被ActiveRecord错误所淹没。除非mongo和SQL数据库同唱一台戏，否则并不需要ActiveRecord。但是如何从已有Rails 3中移除Active Record? 
 
 Open `myapp/config/application.rb` and near the top, remove the line require "rails/all" and add the following lines so you end up with this:
 
 打开config/application.rb，并在其中将“rails/all”替换为如下的的这些gem包，并在环境文件中注释掉涉及ActiveRecord的配置：
 
-> require "action_controller/railtie"
-> require "action_mailer/railtie" 
-> require "active_resource/railtie" 
-> require "rails/test_unit/railtie" 
-> # require "sprockets/railtie" 
+> require "action_controller/railtie"  
+> require "action_mailer/railtie"   
+> require "active_resource/railtie"  
+> require "rails/test_unit/railtie"  
+> # require "sprockets/railtie"  
 > # Uncomment this line for Rails 3.1+
 
 For Rails 3.2+ you'll also need to remove configuration options for Active Record that reside in your environments, ie myapp/config/environments/development.rb. Make sure the lines are commented out like as follows.
 
-> # config.active_record.mass_assignment_sanitizer = :strict 
+对于Rails 3.2+，需要在环境中移除关于Active Record的配置选项。例如，在myapp/config/environments/development.rb中，确保注释如下的行:
+
+> # config.active_record.mass_assignment_sanitizer = :strict   
 > # config.active_record.auto_explain_threshold_in_seconds = 0.5
 
 For Rails 3.2.3+ you'll also need to comment out the following line in myapp/config/application.rb.
 
+对于Rails 3.2.3+，还需要注释myapp/config/application.rb中的如下行:
+
 > # config.active_record.whitelist_attributes = true
 
 You can also generate your new rails app sans Active Record like so.
+
+如果想要在生成新的rails程序时跳过Active Record，其命令如下:
 
 > rails new app_name --skip-active-record
 
@@ -221,7 +237,7 @@ Mongoid.load!("path/to/your/mongoid.yml")
 
 Changing logging options is done simply by telling Mongoid or Moped's logger to have a different level. Logging is turned off by default.
 
-可以通过设置Mongoid的记录等级来改变记录选项。默认情况下，该记录是关闭的
+可以通过设置Mongoid的记录等级来改变日志选项。默认情况下，日志是关闭的。
 {% highlight ruby %}
 module MyApplication
   class Application < Rails::Application
@@ -232,8 +248,9 @@ end
 {% endhighlight %}
 
 If you want to change the logger instance, you can simply just set a new one.
+如果想要改变日志实例(logger), 只要简单的这是一个新的即可。
 
-> Mongoid.logger = Logger.new($stdout) 
+> Mongoid.logger = Logger.new($stdout)  
 > Moped.logger = Logger.new($stdout)
 
 ## Replica Sets(复制集)
@@ -243,19 +260,20 @@ For replica sets, you only need to put each member of the replica set under the 
 
 对于复制集，只要在mongoid.yml中将所有的复制集的成员放置到host选项下，然后放心的交给Mongoid和Moped处理。 默认的一致性选项是最终一致性，这可能有些读写不一致的现象，可以通过:strong选项，从而保证所有的数据和Master节点保持一致。
 
+{% highlight ruby %}
+sessions:
+  default:
+    hosts:
+      - repl0.myapp.com:27017
+      - repl1.myapp.com:27017
+      - repl3.myapp.com:27017
+    database: mongoid
+    options:
+      consistency: :strong
+{% endhighlight %}
 
-> sessions:
->   default:
->     hosts:
->       - repl0.myapp.com:27017
->       - repl1.myapp.com:27017
->       - repl3.myapp.com:27017
->     database: mongoid
->     options:
->       consistency: :strong
-
-
-Sharding（分片）
+## Sharding（分片）
+----
 
 If you are using Mongoid in a sharded MongoDB environment and want to tell Mongoid to include the shard keys in its updates, specify this at the model class level.
 
@@ -270,13 +288,13 @@ end
 {% endhighlight %}
 
 In your mongoid.yml, just ensure that you are pointed at the mongos server in your hosts.在配置文件中，只要确保在主机中指向了正确的mongo 服务器。
-
-> sessions:
->   default:
->     hosts:
->       - mongos.myapp.com:27017
->     database: mongoid
->     options:
->       consistency: :eventual
-
+{% highlight ruby %}
+sessions: 
+  default: 
+    hosts: 
+      - mongos.myapp.com:27017 
+    database: mongoid 
+    options: 
+      consistency: :eventual 
+{% endhighlight %}
 

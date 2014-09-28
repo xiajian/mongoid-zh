@@ -5,6 +5,8 @@ title:  持久化(Persistence)
 
 Mongoid supports all expected CRUD operations for those familiar with other Ruby mappers like Active Record or Data Mapper. What distinguishes Mongoid from other mappers for MongoDB is that the general persistence operations perform atomic updates on only the fields that have changed instead of writing the entire document to the database each time.
 
+Mongoid支持所有期待的CURD的操作。
+
 The persistence sections will provide examples on what database operation is performed when executing the documented command.
 
     Standard
